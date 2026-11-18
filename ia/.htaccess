@@ -1,0 +1,19 @@
+# Protege a configuração da GeneIA na hospedagem Apache (XAMPP/InfinityFree).
+# Os arquivos .php desta pasta dependem de sessão e de POST, mas o .env
+# guardaria a chave em texto puro se fosse aberto pelo navegador.
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(\.env|\.env\..*|config\.php|cliente\.php|escopo\.php|diagnostico\.php)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    <FilesMatch "^(\.env|\.env\..*|config\.php|cliente\.php|escopo\.php|diagnostico\.php)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# Sem listagem de diretório.
+Options -Indexes

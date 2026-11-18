@@ -1,0 +1,248 @@
+/* ==========================================================================
+   QUESTÕES E CORREÇÃO
+   Barra do cronômetro fixa no topo da área, cartões de questão e a revisão
+   com gabarito e explicação.
+   ========================================================================== */
+
+.quiz-secao { padding-top: clamp(18px, 2.6vw, 30px); }
+
+/* --- Cronômetro --------------------------------------------------------- */
+.quiz-toolbar {
+    position: sticky;
+    top: calc(var(--header-h) + 10px);
+    z-index: 40;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 12px 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--header-bg);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.quiz-tempo { display: flex; align-items: baseline; gap: 10px; }
+
+.quiz-tempo-rotulo {
+    color: var(--muted);
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+#cronometro {
+    color: var(--brand-700);
+    font-family: var(--f-display);
+    font-size: 1.6rem;
+    letter-spacing: -.02em;
+    line-height: 1;
+}
+
+html.escuro #cronometro { color: var(--mint); }
+
+.quiz-tempo-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+.select-min {
+    width: auto;
+    min-height: 38px;
+    padding: 6px 10px;
+    border-radius: 11px;
+    font-size: .84rem;
+}
+
+/* --- Quiz --------------------------------------------------------------- */
+.dados-aluno h2 { margin-bottom: 14px; font-size: 1.1rem; }
+
+.quiz-progresso {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 18px 0;
+    color: var(--muted);
+    font-size: .82rem;
+}
+
+.quiz-progresso .bar { flex: 1; }
+
+.questao {
+    margin-bottom: 14px;
+    padding: clamp(18px, 2.6vw, 26px);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: var(--shadow-xs);
+    scroll-margin-top: calc(var(--header-h) + 90px);
+    transition: border-color .2s ease;
+}
+
+.questao:focus-within { border-left-color: var(--brand); }
+
+.questao-erro {
+    border-color: rgba(192, 69, 47, .45);
+    border-left-color: var(--danger);
+}
+
+.questao-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.questao-num {
+    color: var(--brand-600);
+    font-family: var(--f-display);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+
+html.escuro .questao-num { color: var(--mint); }
+
+.questao h3 { margin-bottom: 8px; font-size: 1.02rem; }
+
+.questao-enunciado {
+    margin-bottom: 14px;
+    color: var(--ink-2);
+    font-size: .92rem;
+    white-space: pre-line;
+}
+
+.alternativas { display: grid; gap: 8px; }
+
+.alternativa {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 11px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-2);
+    font-size: .9rem;
+    cursor: pointer;
+    transition: border-color .16s ease, background .16s ease;
+}
+
+.alternativa:hover { border-color: var(--brand); background: var(--surface); }
+
+/* O rádio continua no formulário (e acessível), só não aparece */
+.alternativa input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.alternativa-letra {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--line-2);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.alternativa input:checked + .alternativa-letra {
+    border-color: var(--brand);
+    background: var(--brand);
+    color: #fff;
+}
+
+.alternativa input:focus-visible + .alternativa-letra {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+.alternativa input:checked ~ .alternativa-texto { font-weight: 500; }
+
+/* --- Envio -------------------------------------------------------------- */
+.quiz-envio {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.quiz-envio p { margin: 2px 0 0; font-size: .85rem; }
+
+/* --- Resultado ---------------------------------------------------------- */
+.resultado-secao { padding-top: clamp(18px, 2.6vw, 30px); }
+
+.resultado-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(22px, 4vw, 44px);
+}
+
+.resultado-resumo h2 { margin-bottom: 6px; font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
+
+.resultado-resumo p { margin-bottom: 10px; }
+
+.resultado-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+.revisao { display: grid; gap: 10px; margin-top: 22px; }
+
+.revisao-item {
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+}
+
+.revisao-item.acertou { border-left-color: var(--brand); }
+.revisao-item.errou { border-left-color: var(--danger); }
+
+.revisao-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.revisao-item h3 { margin-bottom: 10px; font-size: .98rem; }
+
+.revisao-linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 6px;
+    color: var(--muted);
+    font-size: .88rem;
+}
+
+.revisao-linha strong { color: var(--ink); font-weight: 600; text-align: right; }
+
+.revisao-explicacao {
+    margin: 10px 0 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-size: .88rem;
+}
+
+@media (max-width: 767px) {
+    .quiz-toolbar { top: calc(var(--header-h) + 6px); }
+    .resultado-topo { align-items: flex-start; }
+    .revisao-linha { flex-direction: column; gap: 2px; }
+    .revisao-linha strong { text-align: left; }
+}

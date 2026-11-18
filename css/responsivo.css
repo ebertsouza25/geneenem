@@ -1,0 +1,41 @@
+/* ==========================================================================
+   RESPONSIVO — ajustes que valem para mais de uma página.
+   O cabeçalho tem as regras dele no base.css e o login no login.css.
+   ========================================================================== */
+
+@media (max-width: 1100px) {
+    .tool-layout { grid-template-columns: minmax(0, 1fr); }
+    .tool-resultado { position: static; }
+}
+
+@media (max-width: 991px) {
+    .sobre-grid { grid-template-columns: minmax(0, 1fr); }
+    .equipe { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .checks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .flashcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767px) {
+    .page-head h1 { font-size: 2rem; }
+
+    .quadro span { min-height: 46px; padding: 8px; font-size: .76rem; }
+    .quadro-celula { font-size: .86rem; }
+
+    .equipe,
+    .checks,
+    .flashcards { grid-template-columns: minmax(0, 1fr); }
+
+    .flashcard { min-height: 0; }
+
+    /* A árvore do heredograma não tem como "quebrar linha" como uma grade
+       normal (as posições são calculadas em x/y fixos), então no celular ela
+       só fica menor e passa a rolar de lado — ver .heredograma-arvore. */
+    .hg-svg { max-width: none; }
+
+    .cta-revisoes { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 420px) {
+    .quiz-tempo-controles { width: 100%; }
+    .quiz-tempo-controles .btn { flex: 1 1 auto; }
+}

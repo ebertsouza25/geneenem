@@ -1,0 +1,12 @@
+# Credenciais locais do MySQL (XAMPP). No Render vêm das variáveis de ambiente.
+config.local.php
+
+# Chave da GeneIA. O modelo fica em ia/.env.example.
+ia/.env
+ia/.env.*
+!ia/.env.example
+
+# Metadados do sistema e logs.
+*.log
+.DS_Store
+Thumbs.db

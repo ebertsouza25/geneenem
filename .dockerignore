@@ -1,0 +1,11 @@
+# Nada de segredo local dentro da imagem: no Render as credenciais chegam
+# por variáveis de ambiente, e a chave da GeneIA também.
+config.local.php
+ia/.env
+ia/.env.*
+
+# Metadados que não fazem parte do site.
+.git
+.gitignore
+.dockerignore
+*.log

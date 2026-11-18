@@ -1,0 +1,21 @@
+# Empacotamento do GeneEnem para a Wasmer Edge (PHP 8.3).
+#
+# O projeto inteiro é montado em /app e o servidor embutido do PHP serve essa
+# pasta na porta 8080 — é o mesmo comando que se usa localmente:
+#   php -t . -S localhost:8080
+#
+# Teste local do pacote: wasmer run .
+
+[ dependencies ]
+"php/php" = "=8.3.4"
+
+[ fs ]
+"/app/" = "."
+
+[[ command ]]
+name = "run"
+module = "php/php:php"
+runner = "wasi"
+
+[ command . annotations . wasi ]
+main-args = ["-t", "/app", "-S", "localhost:8080"]

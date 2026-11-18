@@ -1,0 +1,181 @@
+/* ==========================================================================
+   SOBRE
+   ========================================================================== */
+
+.sobre-secao { padding-top: clamp(18px, 2.6vw, 32px); }
+
+.sobre-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.sobre-card {
+    padding: clamp(20px, 2.6vw, 28px);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+    box-shadow: var(--shadow-xs);
+}
+
+.sobre-card h2 { margin-bottom: 10px; font-size: 1.15rem; }
+
+.sobre-card p {
+    margin-bottom: 10px;
+    color: var(--ink-2);
+    font-size: .92rem;
+}
+
+.sobre-card p.muted { color: var(--muted); font-size: .88rem; }
+.sobre-card p:last-child { margin-bottom: 0; }
+
+.sobre-largo { grid-column: 1 / -1; }
+
+.lista-info { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+
+.lista-info li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    font-size: .88rem;
+}
+
+.lista-info li:last-child { padding-bottom: 0; border-bottom: 0; }
+.lista-info span { color: var(--muted); }
+
+/* Equipe no estilo do Serpenteando: cartão centralizado, avatar redondo
+   grande, nome e cargo em destaque. */
+.equipe {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.check-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .2s ease, transform .2s ease;
+}
+
+.check-link:hover {
+    transform: translateY(-2px);
+    border-color: rgba(18, 148, 106, .40);
+}
+
+.check-icone {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--brand-700);
+}
+
+html.escuro .check-icone { color: var(--mint); }
+
+.pessoa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 18px 12px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface-2);
+    text-align: center;
+}
+
+/* Foto real do integrante, recortada em círculo sem distorcer o rosto */
+.pessoa-foto {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 12px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 2px solid rgba(18, 148, 106, .35);
+    background: var(--surface-2);
+}
+
+.pessoa-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+}
+
+.pessoa-avaliador .pessoa-foto { border-color: rgba(196, 168, 77, .60); }
+
+.pessoa-avatar {
+    display: grid;
+    place-items: center;
+    width: 92px;
+    height: 92px;
+    margin-bottom: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(18, 148, 106, .35);
+    background: linear-gradient(135deg, var(--mint), var(--lime));
+    color: #04140e;
+    font-family: var(--f-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.pessoa h3 { margin: 0; font-size: 1rem; }
+
+.pessoa-cargo {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.pessoa-avaliador .pessoa-avatar {
+    border-color: rgba(196, 168, 77, .55);
+    background: linear-gradient(135deg, #f4e6b8, #d9c46a);
+}
+
+.checks {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.check {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface-2);
+}
+
+.check strong { display: block; margin-bottom: 3px; font-size: .87rem; }
+
+.check span { color: var(--muted); font-size: .8rem; line-height: 1.45; }
+
+code {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: rgba(18, 148, 106, .12);
+    color: var(--brand-700);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .85em;
+}
+
+html.escuro code { color: var(--mint); }
+
+.lista-refs {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ink-2);
+    font-size: .88rem;
+}

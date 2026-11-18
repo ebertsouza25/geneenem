@@ -1,0 +1,488 @@
+/* ==========================================================================
+   FERRAMENTAS
+   Punnett e laboratório (DNA, heredograma, flashcards).
+   O layout usa duas colunas no desktop: formulário e resultado.
+   ========================================================================== */
+
+.tool-secao { padding-top: clamp(18px, 2.6vw, 32px); }
+
+.tool-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .98fr) minmax(0, 1.02fr);
+    align-items: start;
+    gap: 16px;
+}
+
+.tool {
+    padding: clamp(18px, 2.6vw, 28px);
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--surface);
+    box-shadow: var(--shadow-xs);
+    scroll-margin-top: calc(var(--header-h) + 18px);
+}
+
+.tool h2 { margin-bottom: 4px; font-size: 1.2rem; }
+
+.tool > p {
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+.tool form { margin-bottom: 8px; }
+
+.tool-resultado { position: sticky; top: calc(var(--header-h) + 14px); }
+
+/* Linha de formulário com botão ao lado (DNA) */
+.tool-grade {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.tool-grade .field { flex: 1 1 250px; margin-bottom: 0; }
+
+/* O botão "Analisar fita" ficava desalinhado porque o .tool-grade usa
+   align-items:flex-start — isso gruda o botão no topo da linha, ou seja,
+   na altura do rótulo, não do campo. Trocando por "center" o botão cai no
+   meio da altura do campo inteiro (rótulo + input + dica). O rótulo em
+   cima e a dica embaixo do input do DNA têm altura bem parecida, então o
+   centro do bloco cai quase exatamente no centro do próprio input — sem
+   precisar de margem avulsa em lugar nenhum. Escopado só na seção #dna
+   pra não mexer no Heredograma nem no Punnett, que não foram pedidos. */
+#dna .tool-grade { align-items: center; }
+
+/* Mesmo problema do DNA, mas aqui o campo só tem rótulo em cima do seletor
+   (sem dica embaixo) — "center" ficaria uns 13px alto demais, porque não
+   tem nada embaixo pra compensar o rótulo de cima. "flex-end" alinha pela
+   base: o fundo do botão encosta no fundo do seletor, e como os dois têm
+   quase a mesma altura (botão 48px, seletor 50px), o alinhamento fica
+   praticamente perfeito (2px de diferença, imperceptível). */
+.heredograma-analise .tool-grade { align-items: flex-end; }
+
+/* Lista de apoio dos painéis */
+.lista-explica { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+
+.lista-explica li {
+    position: relative;
+    padding-left: 16px;
+    color: var(--ink-2);
+    font-size: .88rem;
+}
+
+.lista-explica li::before {
+    content: "";
+    position: absolute;
+    top: .6em;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mint);
+}
+
+/* --- Quadro de Punnett -------------------------------------------------- */
+.quadro {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    overflow: hidden;
+    margin: 4px 0 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+}
+
+.quadro span {
+    display: grid;
+    place-items: center;
+    min-height: 54px;
+    padding: 10px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    font-size: .82rem;
+}
+
+.quadro span:nth-child(3n) { border-right: 0; }
+.quadro span:nth-last-child(-n+3) { border-bottom: 0; }
+
+.quadro-canto { background: var(--surface-2); }
+
+.quadro-cab,
+.quadro-lado {
+    background: var(--brand-900);
+    color: #fff;
+    font-weight: 700;
+    font-size: .8rem;
+}
+
+.quadro-celula {
+    color: var(--brand-700);
+    font-family: var(--f-display);
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+html.escuro .quadro-celula { color: var(--mint); }
+
+/* Genótipos em chips */
+.genotipos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 18px;
+    padding: 0;
+    list-style: none;
+}
+
+.genotipos li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface-2);
+}
+
+.genotipos strong { font-family: var(--f-display); font-size: .95rem; }
+.genotipos span { color: var(--muted); font-size: .72rem; }
+
+/* Barras de fenótipo */
+.medida { margin-bottom: 12px; }
+
+.medida-topo {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: .84rem;
+}
+
+.medida-topo strong { font-family: var(--f-display); }
+
+.caixa-conta {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--mint);
+    border-radius: 0 12px 12px 0;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-size: .88rem;
+}
+
+/* --- DNA ---------------------------------------------------------------- */
+.fita-linha { margin-bottom: 14px; }
+
+.fita-rotulo {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+    font-size: .64rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+/* Marca a direção 3'/5' ao lado do nome da fita (mostra o antiparalelismo) */
+.fita-direcao {
+    margin-left: 6px;
+    color: var(--brand-600);
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+html.escuro .fita-direcao { color: var(--mint); }
+
+.fita { display: flex; flex-wrap: wrap; gap: 3px; }
+
+.base {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 28px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface-2);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--ink-2);
+}
+
+.base-a { background: rgba(61, 220, 151, .16); border-color: rgba(61, 220, 151, .35); color: #0d6b4b; }
+.base-t { background: rgba(249, 200, 90, .18); border-color: rgba(249, 200, 90, .40); color: #8a5709; }
+.base-c { background: rgba(96, 165, 250, .16); border-color: rgba(96, 165, 250, .38); color: #1c4fb8; }
+.base-g { background: rgba(167, 139, 250, .18); border-color: rgba(167, 139, 250, .40); color: #6d28d9; }
+/* U só existe no RNA (troca a timina). Usa a mesma cor da timina pra deixar
+   claro que U "substitui" T, sem inventar uma cor nova sem motivo. */
+.base-u { background: rgba(249, 200, 90, .18); border-color: rgba(249, 200, 90, .40); color: #8a5709; }
+
+html.escuro .base-a { color: #7fe8b6; }
+html.escuro .base-t { color: #ffd479; }
+html.escuro .base-c { color: #93c5fd; }
+html.escuro .base-g { color: #d8b4fe; }
+html.escuro .base-u { color: #ffd479; }
+
+.mini-dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: .78rem;
+}
+
+.mini-dados strong { color: var(--ink); }
+
+/* --- Heredograma (árvore interativa) ------------------------------------ */
+
+/* Checkbox "Afetado(a)" do formulário de adicionar pessoa */
+.campo-checkbox { display: flex; align-items: flex-end; }
+
+.checkbox-linha {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .88rem;
+    color: var(--ink-2);
+    cursor: pointer;
+}
+
+.checkbox-linha input { width: 16px; height: 16px; accent-color: var(--brand); }
+
+.hg-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 6px;
+}
+
+/* A árvore pode ficar mais larga que a tela (muitas pessoas numa geração),
+   então rola por dentro da caixa em vez de espremer o desenho. */
+.heredograma-arvore {
+    overflow-x: auto;
+    margin: 10px 0 14px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface-2);
+}
+
+.hg-svg { display: block; }
+
+/* Quadrado = homem, círculo = mulher (convenção padrão de heredograma) */
+.hg-forma { fill: var(--surface); stroke: var(--brand-700); stroke-width: 2; }
+.hg-afetado .hg-forma { fill: var(--brand-700); }
+
+html.escuro .hg-forma { stroke: var(--mint); }
+html.escuro .hg-afetado .hg-forma { fill: var(--mint); }
+
+.hg-texto { font-size: 10px; fill: var(--ink-2); font-family: var(--f-texto, inherit); }
+html.escuro .hg-texto { fill: var(--ink-2); }
+
+.hg-linha-casal,
+.hg-linha-filho { stroke: var(--line-2); stroke-width: 2; }
+
+html.escuro .hg-linha-casal,
+html.escuro .hg-linha-filho { stroke: var(--line); }
+
+.heredograma-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 14px;
+    color: var(--muted);
+    font-size: .76rem;
+}
+
+.heredograma-legenda span { display: inline-flex; align-items: center; gap: 6px; }
+
+.hg-leg {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--brand-700);
+    background: var(--surface);
+}
+
+.hg-leg-f { border-radius: 50%; }
+.hg-leg-afetado { background: var(--brand-700); }
+
+html.escuro .hg-leg { border-color: var(--mint); }
+html.escuro .hg-leg-afetado { background: var(--mint); }
+
+/* Lista das pessoas em texto (acessibilidade + fallback sem olhar o desenho) */
+.heredograma-lista {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 18px;
+    padding: 0;
+    list-style: none;
+}
+
+.heredograma-lista li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface-2);
+    font-size: .82rem;
+    color: var(--ink-2);
+}
+
+.hg-remover {
+    flex: 0 0 auto;
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--danger);
+    font-size: .72rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.hg-remover:hover { border-color: var(--danger); }
+
+.heredograma-analise {
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
+.hg-ok {
+    padding: 12px 14px;
+    border-left: 3px solid var(--mint);
+    border-radius: 0 12px 12px 0;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-size: .88rem;
+}
+
+.hg-incompativel {
+    padding: 12px 14px;
+    border-left: 3px solid var(--danger);
+    border-radius: 0 12px 12px 0;
+    background: var(--danger-bg);
+    color: var(--ink-2);
+    font-size: .88rem;
+}
+
+.hg-incompativel ul { margin: 6px 0 0; padding-left: 18px; }
+.hg-incompativel li { margin-bottom: 4px; }
+
+.pequeno { font-size: .82rem; }
+
+/* --- Flashcards --------------------------------------------------------- */
+.flashcards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.flashcard {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 150px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .2s ease, transform .2s ease, background .2s ease;
+}
+
+.flashcard:hover {
+    transform: translateY(-2px);
+    border-color: rgba(18, 148, 106, .40);
+}
+
+.fc-topo {
+    color: var(--brand-600);
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+html.escuro .fc-topo { color: var(--mint); }
+
+.fc-pergunta {
+    font-family: var(--f-display);
+    font-size: .95rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+/* A resposta fica escondida até o clique, mas a PERGUNTA nunca é escondida:
+   as duas informações aparecem juntas, uma abaixo da outra. */
+.fc-resposta {
+    display: none;
+    color: var(--ink-2);
+    font-size: .86rem;
+    line-height: 1.5;
+}
+
+.flashcard.aberto {
+    border-color: var(--brand);
+    background: var(--surface);
+}
+
+.flashcard.aberto .fc-resposta {
+    display: block;
+    margin-top: 2px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
+/* Rótulo "Resposta" separa visualmente a resposta da pergunta. */
+.flashcard.aberto .fc-resposta::before {
+    content: "Resposta";
+    display: block;
+    margin-bottom: 4px;
+    color: var(--brand-600);
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+html.escuro .flashcard.aberto .fc-resposta::before { color: var(--mint); }
+
+/* Dica no pé do cartão: deixa claro que ele abre e fecha. */
+.flashcard::after {
+    content: "Clique para ver a resposta";
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.flashcard.aberto::after { content: "Clique para recolher"; }
+
+/* --- Navegação entre ferramentas --------------------------------------- */
+.tool-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+
+.tool-nav a {
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-2);
+    font-size: .82rem;
+    font-weight: 500;
+    transition: border-color .18s ease, color .18s ease;
+}
+
+.tool-nav a:hover { border-color: var(--brand); color: var(--brand-600); }
