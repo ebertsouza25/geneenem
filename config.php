@@ -1,20 +1,23 @@
 <?php
 // Conexão com o MySQL do GeneEnem.
 //
-// Este arquivo NÃO guarda credenciais. Elas vêm de duas fontes, nesta ordem:
+// Este arquivo NÃO guarda credenciais. Elas vêm de três fontes, nesta ordem:
 //
-//   1. Variáveis de ambiente do servidor.
-//      Na Wasmer Edge o banco é criado no painel (capabilities.database do
-//      app.yaml) e a plataforma injeta automaticamente:
+//   1. Variáveis de ambiente separadas, definidas no painel da hospedagem:
 //         DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD
-//      Os nomes antigos GENEENEM_DB_* continuam aceitos, então nada precisa
-//      ser editado ao publicar.
+//      Também são aceitos os nomes usados por outros provedores
+//      (MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, MYSQLHOST...) e os antigos
+//      GENEENEM_DB_*, então nada precisa ser editado ao publicar.
 //
-//   2. config.local.php (só existe na sua máquina, com os dados do XAMPP).
-//      Ele é ignorado pelo .wasmerignore/.gitignore, ou seja, não vai para a
+//   2. Uma URL única de conexão, como o painel de alguns provedores entrega:
+//         DATABASE_URL=mysql://usuario:senha@host:3306/banco
+//
+//   3. config.local.php (só existe na sua máquina, com os dados do XAMPP).
+//      Ele é ignorado pelo .dockerignore/.gitignore, ou seja, não vai para a
 //      hospedagem. Localmente é o que aponta para localhost:3307.
 //
 // Resultado: o mesmo projeto roda no XAMPP e no servidor sem trocar código.
+// O ambiente é identificado sozinho — não há nada para editar a cada publicação.
 
 // Lê uma variável de ambiente considerando getenv(), $_ENV e $_SERVER,
 // porque cada runtime popula lugares diferentes.
@@ -48,15 +51,62 @@ function geneenemVariavelAmbiente(array $nomes, bool $aceitaVazio = false)
     return null;
 }
 
+// Interpreta uma URL de conexão no formato mysql://usuario:senha@host:porta/banco.
+// Vários provedores entregam o banco assim, em uma única variável, em vez de
+// cinco separadas.
+function geneenemLerUrl(?string $url): ?array
+{
+    if ($url === null || $url === '') {
+        return null;
+    }
+
+    $partes = parse_url($url);
+
+    if (!is_array($partes) || empty($partes['host'])) {
+        return null;
+    }
+
+    $esquema = isset($partes['scheme']) ? strtolower($partes['scheme']) : '';
+
+    if (!in_array($esquema, array('mysql', 'mysql2', 'mariadb'), true)) {
+        return null;
+    }
+
+    $nome = isset($partes['path']) ? ltrim($partes['path'], '/') : '';
+
+    return array(
+        'host'    => urldecode($partes['host']),
+        'porta'   => isset($partes['port']) ? (string) $partes['port'] : null,
+        'nome_db' => $nome !== '' ? urldecode($nome) : null,
+        'usuario' => isset($partes['user']) ? urldecode($partes['user']) : null,
+        'senha'   => isset($partes['pass']) ? urldecode($partes['pass']) : null,
+    );
+}
+
 $configuracao = array(
-    'host'    => geneenemVariavelAmbiente(array('DB_HOST', 'GENEENEM_DB_HOST')),
-    'porta'   => geneenemVariavelAmbiente(array('DB_PORT', 'GENEENEM_DB_PORT')),
-    'nome_db' => geneenemVariavelAmbiente(array('DB_NAME', 'GENEENEM_DB_NAME')),
-    'usuario' => geneenemVariavelAmbiente(array('DB_USERNAME', 'DB_USER', 'GENEENEM_DB_USER')),
-    'senha'   => geneenemVariavelAmbiente(array('DB_PASSWORD', 'DB_PASS', 'GENEENEM_DB_PASS'), true),
+    'host'    => geneenemVariavelAmbiente(array('DB_HOST', 'MYSQL_HOST', 'MYSQLHOST', 'GENEENEM_DB_HOST')),
+    'porta'   => geneenemVariavelAmbiente(array('DB_PORT', 'MYSQL_PORT', 'MYSQLPORT', 'GENEENEM_DB_PORT')),
+    'nome_db' => geneenemVariavelAmbiente(array('DB_NAME', 'MYSQL_DATABASE', 'MYSQLDATABASE', 'GENEENEM_DB_NAME')),
+    'usuario' => geneenemVariavelAmbiente(array('DB_USERNAME', 'DB_USER', 'MYSQL_USER', 'MYSQLUSER', 'GENEENEM_DB_USER')),
+    'senha'   => geneenemVariavelAmbiente(array('DB_PASSWORD', 'DB_PASS', 'MYSQL_PASSWORD', 'MYSQLPASSWORD', 'GENEENEM_DB_PASS'), true),
     'ssl'     => geneenemVariavelAmbiente(array('GENEENEM_DB_SSL')),
     'origem'  => 'ambiente'
 );
+
+// Sem os dados separados: tenta a URL única de conexão.
+if ($configuracao['host'] === null) {
+    $url = geneenemVariavelAmbiente(array('DATABASE_URL', 'MYSQL_URL', 'CLEARDB_DATABASE_URL', 'GENEENEM_DATABASE_URL'));
+    $daUrl = geneenemLerUrl($url);
+
+    if ($daUrl !== null) {
+        $configuracao['host']    = $daUrl['host'];
+        $configuracao['porta']   = $daUrl['porta'];
+        $configuracao['nome_db'] = $daUrl['nome_db'];
+        $configuracao['usuario'] = $daUrl['usuario'];
+        $configuracao['senha']   = $daUrl['senha'] !== null ? $daUrl['senha'] : '';
+        $configuracao['origem']  = 'url de conexão';
+    }
+}
 
 // Sem variáveis de ambiente: usa o arquivo local (apenas no XAMPP).
 if ($configuracao['host'] === null) {
@@ -77,17 +127,45 @@ if ($configuracao['host'] === null) {
     }
 }
 
-// Servidor sem banco configurado: falha explícita, nunca silenciosa,
-// e sem expor nome de usuário, senha ou host na página.
+// Identifica o ambiente sem nenhuma configuração manual:
+//   'xampp'      -> os dados vieram do config.local.php
+//   'hospedagem' -> os dados vieram do painel do servidor
+function geneenemAmbiente(string $origem): string
+{
+    return $origem === 'config.local.php' ? 'xampp' : 'hospedagem';
+}
+
+// Servidor sem banco configurado: falha explícita, nunca silenciosa, e sem
+// expor senha, host ou usuário na página. O nome da variável que falta é
+// mostrado porque é o que permite configurar o painel; ele não é segredo.
 if ($configuracao['host'] === null || $configuracao['nome_db'] === null || $configuracao['usuario'] === null) {
+    $faltando = array();
+
+    if ($configuracao['host'] === null) {
+        $faltando[] = 'DB_HOST';
+    }
+
+    if ($configuracao['nome_db'] === null) {
+        $faltando[] = 'DB_NAME';
+    }
+
+    if ($configuracao['usuario'] === null) {
+        $faltando[] = 'DB_USERNAME';
+    }
+
     error_log(
-        'GeneEnem: banco de dados não configurado. No servidor, crie o banco no painel '
-        . '(app.yaml com capabilities.database) para receber DB_HOST/DB_PORT/DB_NAME/'
-        . 'DB_USERNAME/DB_PASSWORD; no XAMPP, crie config.local.php.'
+        'GeneEnem: banco de dados não configurado no ambiente ' . geneenemAmbiente($configuracao['origem'])
+        . '. Variáveis ausentes: ' . implode(', ', $faltando)
+        . '. Defina-as no painel da hospedagem (Render > Environment) apontando para um MySQL externo, '
+        . 'ou use DATABASE_URL=mysql://usuario:senha@host:3306/banco; no XAMPP, crie config.local.php.'
     );
 
     http_response_code(500);
-    exit('O banco de dados do GeneEnem ainda não foi configurado neste servidor.');
+    header('Content-Type: text/plain; charset=UTF-8');
+    exit(
+        'O banco de dados do GeneEnem ainda não foi configurado neste servidor.' . PHP_EOL
+        . 'Faltam estas variáveis de ambiente: ' . implode(', ', $faltando) . '.' . PHP_EOL
+    );
 }
 
 $configuracao['porta'] = $configuracao['porta'] !== null ? (int) $configuracao['porta'] : 3306;
